@@ -1,0 +1,15 @@
+alacritty
+bash
+git
+mariadb-clients
+neovim
+nodejs
+npm
+pnpm
+starship
+tmux
+ttf-fira-code
+ttf-firacode-nerd
+wireguard-tools
+xclip
+yarn

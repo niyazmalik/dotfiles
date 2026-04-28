@@ -1,0 +1,28 @@
+format = "$directory$git_branch$git_status$character"
+
+[character]
+success_symbol = ""
+error_symbol = ""
+
+[directory]
+truncation_length = 1
+home_symbol = "niyazmalik"
+format = "[$path]($style) "
+style = "bold #d96459"
+
+[git_branch]
+format = "[git:](bold #00b300)[\\(](bold #00b300)[$branch](#d96459 bold)[\\)](bold #00b300) "
+
+[git_status]
+format = '([$all_status$ahead_behind]($style) )'
+style = "bold yellow"
+untracked = "✗"
+modified = "✗"
+staged = "✓"
+deleted = "✗"
+
+[nodejs]
+disabled = true
+
+[package]
+disabled = true
