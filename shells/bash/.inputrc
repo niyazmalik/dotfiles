@@ -1,0 +1,4 @@
+set editing-mode vi
+set keyseq-timeout 200
+set keymap vi-insert
+"kj": vi-movement-mode

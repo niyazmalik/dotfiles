@@ -1,3 +1,0 @@
-pyright
-typescript
-typescript-language-server

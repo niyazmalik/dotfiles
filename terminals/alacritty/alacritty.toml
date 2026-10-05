@@ -1,62 +1,37 @@
-# [font]
-# normal = { family = "Fira Code", style = "Medium" }
-# size = 12.5
-
 [font]
 normal = { family = "FiraCode Nerd Font", style = "Regular" }
-size = 12.0
+size = 10.5
 
 [font.offset]
 y = 3
 
 [colors.primary]
 background = "#000000"
-foreground = "#ffffff"
-
-# [colors.normal]
-# black   = "#000000"
-# red     = "#ff0000"
-# green   = "#00ff00"
-# yellow  = "#ffff00"
-# blue    = "#0000ff"
-# magenta = "#ff00ff"
-# cyan    = "#00ffff"
-# white   = "#ffffff"
-#
-# [colors.bright]
-# black   = "#808080"
-# red     = "#ff5555"
-# green   = "#55ff55"
-# yellow  = "#ffff55"
-# blue    = "#5555ff"
-# magenta = "#ff55ff"
-# cyan    = "#55ffff"
-# white   = "#ffffff"
+foreground = "#d7d7d7"
 
 [colors.normal]
 black   = "#000000"
-red     = "#cd3131"
-green   = "#0dbc79"
-yellow  = "#e5e510"
-blue    = "#2472c8"
-magenta = "#bc3fbc"
-cyan    = "#11a8cd"
-white   = "#e5e5e5"
+red     = "#a83f45"
+green   = "#43a66f"
+yellow  = "#b9b85f"
+blue    = "#4d75a8"
+magenta = "#9c63a8"
+cyan    = "#4f9bad"
+white   = "#c8c8c8"
 
 [colors.bright]
-black   = "#666666"
-red     = "#f14c4c"
-green   = "#23d18b"
-yellow  = "#f5f543"
-blue    = "#3b8eea"
-magenta = "#d670d6"
-cyan    = "#29b8db"
-white   = "#e5e5e5"
+black   = "#555555"
+red     = "#c4565d"
+green   = "#5fbd87"
+yellow  = "#d1cf78"
+blue    = "#668dc0"
+magenta = "#b476bd"
+cyan    = "#68b1c4"
+white   = "#d7d7d7"
 
 [window]
 startup_mode = "Maximized"
 decorations = "None"
-dynamic_padding = false
 
 [window.padding]
 x = 4
@@ -66,15 +41,8 @@ y = 4
 columns = 200
 lines = 50
 
-[bell]
-animation = "EaseOutExpo"
-duration = 0
-
 [selection]
 save_to_clipboard = true
-
-[mouse]
-hide_when_typing = false
 
 [[mouse.bindings]]
 mouse = "Right"

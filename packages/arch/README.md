@@ -1,9 +1,7 @@
 # Arch package manifest
 
-This folder tracks the packages that back the current shell/editor/terminal setup on this machine.
+These are the packages my configs in this repo actually depend on.
+`install.sh` installs everything in `pacman.txt` with `pacman -S --needed`.
 
-Files:
-- `pacman.txt`: official Arch packages currently installed and used by the setup
-- `aur.txt`: AUR packages currently installed and used by the setup
-- `pnpm-global.txt`: global pnpm tools the current Neovim/LSP setup depends on
-- `recommended.txt`: useful packages referenced by config but not currently installed
+- `pacman.txt`: official Arch packages, including the language servers Neovim talks to.
+- `aur.txt`: AUR packages, which I install by hand with my AUR helper.

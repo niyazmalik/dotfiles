@@ -17,6 +17,10 @@ link() {
     ln -sfn "$source" "$target"
 }
 
+install_packages() {
+    sudo pacman -S --needed - < "$dotfiles/packages/arch/pacman.txt"
+}
+
 install_gnome() {
     local extensions="$HOME/.local/share/gnome-shell/extensions"
     local own=app-focus-shortcuts@niyaz.local
@@ -41,5 +45,24 @@ install_neovim() {
     link editors/neovim "$HOME/.config/nvim"
 }
 
+install_shell() {
+    link shells/bash/.bashrc "$HOME/.bashrc"
+    link shells/bash/.bash_profile "$HOME/.bash_profile"
+    link shells/bash/.inputrc "$HOME/.inputrc"
+
+    if [[ ! -d "$HOME/.oh-my-bash" ]]; then
+        git clone --depth 1 https://github.com/ohmybash/oh-my-bash.git "$HOME/.oh-my-bash"
+    fi
+    link prompts/oh-my-bash/robbyrussell-niyaz "$HOME/.oh-my-bash/custom/themes/robbyrussell-niyaz"
+}
+
+install_terminal() {
+    link terminals/alacritty/alacritty.toml "$HOME/.config/alacritty/alacritty.toml"
+    link multiplexers/tmux/.tmux.conf "$HOME/.tmux.conf"
+}
+
+install_packages
 install_gnome
 install_neovim
+install_shell
+install_terminal
