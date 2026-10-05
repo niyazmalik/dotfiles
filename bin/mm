@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+formats="opus mp3 m4a flac wav"
+
+usage() {
+    cat <<USAGE
+Usage: mm [-f format] <url> [name]
+
+Downloads the audio from a YouTube, YouTube Music or any other yt-dlp link
+and saves it to ~/Music.
+
+Arguments:
+  url        the link to download
+  name       file name to save as, without extension (optional, defaults to the track title)
+  -f format  ${formats// /, } (default: opus)
+
+Examples:
+  mm "https://music.youtube.com/watch?v=..."
+  mm -f mp3 "https://www.youtube.com/watch?v=..." "song name"
+USAGE
+}
+
+format=opus
+while [[ "${1:-}" == -* ]]; do
+    case "$1" in
+        -h|--help) usage; exit 0 ;;
+        -f|--format) [[ $# -ge 2 ]] || { usage >&2; exit 2; }; format="$2"; shift 2 ;;
+        *) usage >&2; exit 2 ;;
+    esac
+done
+
+if [[ $# -lt 1 || $# -gt 2 || " $formats " != *" $format "* ]]; then
+    usage >&2
+    exit 2
+fi
+
+name="${2:-%(title)s}"
+name="${name%."$format"}"
+
+yt-dlp \
+    --quiet \
+    --no-warnings \
+    --no-playlist \
+    --extract-audio \
+    --audio-format "$format" \
+    --audio-quality 0 \
+    --no-mtime \
+    --output "$HOME/Music/${name//\//-}.%(ext)s" \
+    --print "after_move:Saved: %(filepath)s" \
+    "$1"

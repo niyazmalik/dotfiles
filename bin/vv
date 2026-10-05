@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+formats="mp4 mkv webm"
+
+usage() {
+    cat <<USAGE
+Usage: vv [-f format] <url> [name]
+
+Downloads the video from a YouTube, Loom or any other yt-dlp link
+and saves it to ~/Videos.
+
+Arguments:
+  url        the link to download
+  name       file name to save as, without extension (optional, defaults to the video title)
+  -f format  ${formats// /, } (default: mp4)
+
+Examples:
+  vv "https://www.loom.com/share/..." "demo"
+  vv -f mkv "https://www.youtube.com/watch?v=..."
+USAGE
+}
+
+format=mp4
+while [[ "${1:-}" == -* ]]; do
+    case "$1" in
+        -h|--help) usage; exit 0 ;;
+        -f|--format) [[ $# -ge 2 ]] || { usage >&2; exit 2; }; format="$2"; shift 2 ;;
+        *) usage >&2; exit 2 ;;
+    esac
+done
+
+if [[ $# -lt 1 || $# -gt 2 || " $formats " != *" $format "* ]]; then
+    usage >&2
+    exit 2
+fi
+
+name="${2:-%(title)s}"
+name="${name%."$format"}"
+
+yt-dlp \
+    --quiet \
+    --no-warnings \
+    --no-playlist \
+    --format-sort "ext:$format" \
+    --remux-video "$format" \
+    --no-mtime \
+    --output "$HOME/Videos/${name//\//-}.%(ext)s" \
+    --print "after_move:Saved: %(filepath)s" \
+    "$1"
