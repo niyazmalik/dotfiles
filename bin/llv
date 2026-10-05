@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+    cat <<'USAGE'
+Usage: llv <loom-url> <name>
+
+Downloads the Loom video and saves it to ~/Videos/loom/<name>.mp4
+
+Example:
+  llv "https://www.loom.com/share/..." "demo"
+USAGE
+}
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+    usage
+    exit 0
+fi
+
+if [[ $# -ne 2 || -z "$2" ]]; then
+    usage >&2
+    exit 2
+fi
+
+url="$1"
+name="${2%.mp4}"
+name="${name//\//-}"
+dir="$HOME/Videos/loom"
+
+mkdir -p "$dir"
+echo "Downloading: $name"
+
+yt-dlp \
+    --quiet \
+    --no-warnings \
+    --no-playlist \
+    --remux-video mp4 \
+    --no-mtime \
+    --output "$dir/$name.%(ext)s" \
+    "$url"
+
+echo "Saved: $dir/$name.mp4"

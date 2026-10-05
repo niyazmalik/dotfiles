@@ -56,6 +56,16 @@ install_shell() {
     link prompts/oh-my-bash/robbyrussell-niyaz "$HOME/.oh-my-bash/custom/themes/robbyrussell-niyaz"
 }
 
+install_git() {
+    link git/.gitconfig "$HOME/.gitconfig"
+}
+
+install_scripts() {
+    for script in "$dotfiles"/bin/*; do
+        link "bin/$(basename "$script")" "$HOME/.local/bin/$(basename "$script")"
+    done
+}
+
 install_terminal() {
     link terminals/alacritty/alacritty.toml "$HOME/.config/alacritty/alacritty.toml"
     link multiplexers/tmux/.tmux.conf "$HOME/.tmux.conf"
@@ -66,3 +76,5 @@ install_gnome
 install_neovim
 install_shell
 install_terminal
+install_git
+install_scripts

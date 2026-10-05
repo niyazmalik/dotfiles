@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+    cat <<'USAGE'
+Usage: yyv <youtube-url> <name>
+
+Downloads the audio as Opus and saves it to ~/Music/<name>.opus
+
+Example:
+  yyv "https://www.youtube.com/watch?v=..." "song name"
+USAGE
+}
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+    usage
+    exit 0
+fi
+
+if [[ $# -ne 2 || -z "$2" ]]; then
+    usage >&2
+    exit 2
+fi
+
+url="$1"
+name="${2%.opus}"
+name="${name//\//-}"
+dir="$HOME/Music"
+
+mkdir -p "$dir"
+echo "Downloading: $name"
+
+yt-dlp \
+    --quiet \
+    --no-warnings \
+    --no-playlist \
+    --extract-audio \
+    --audio-format opus \
+    --audio-quality 320K \
+    --no-mtime \
+    --output "$dir/$name.%(ext)s" \
+    "$url"
+
+echo "Saved: $dir/$name.opus"
