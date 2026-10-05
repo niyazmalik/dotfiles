@@ -1,0 +1,10 @@
+{
+  "description": "Focus an existing app window from a shortcut, or launch it when no window exists.",
+  "name": "App Focus Shortcuts",
+  "settings-schema": "org.gnome.shell.extensions.app-focus-shortcuts",
+  "shell-version": [
+    "50"
+  ],
+  "uuid": "app-focus-shortcuts@niyaz.local",
+  "version": 1
+}

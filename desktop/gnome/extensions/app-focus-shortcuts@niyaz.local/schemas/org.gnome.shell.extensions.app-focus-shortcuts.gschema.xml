@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.app-focus-shortcuts" path="/org/gnome/shell/extensions/app-focus-shortcuts/">
+    <key name="files-shortcut" type="as">
+      <default>["&lt;Super&gt;e"]</default>
+      <summary>Files shortcut</summary>
+      <description>Shortcut used to focus or launch GNOME Files.</description>
+    </key>
+    <key name="settings-shortcut" type="as">
+      <default>["&lt;Super&gt;s"]</default>
+      <summary>Settings shortcut</summary>
+      <description>Shortcut used to focus or launch GNOME Settings.</description>
+    </key>
+    <key name="notification-shortcut" type="as">
+      <default>["&lt;Super&gt;n"]</default>
+      <summary>Notification panel shortcut</summary>
+      <description>Shortcut used to reveal the top bar and toggle the GNOME notification panel.</description>
+    </key>
+  </schema>
+</schemalist>
