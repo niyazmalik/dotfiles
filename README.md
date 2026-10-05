@@ -1,62 +1,79 @@
 # dotfiles
 
-This is my whole setup on Arch Linux with GNOME: Neovim, tmux, Alacritty, bash, my GNOME extension and a couple of small scripts.
-I keep it here so a new laptop is one clone and one script away from feeling like mine.
+Arch Linux + GNOME setup: Neovim, tmux, Alacritty, bash, a GNOME extension and a couple of scripts.
 
-Every config in this repo is symlinked into place, not copied.
-So when I tweak something on my machine, I am editing the repo directly, and the change is one commit away from every other machine.
+Configs are symlinked into place, not copied, so editing a config on the machine edits the repo.
 
-## Setting up a new machine
+## Setup on a new machine
 
-Install Arch with GNOME first, log in, and open a terminal inside GNOME.
-The GNOME settings need a running session, so a bare TTY will not do.
+1. Install Arch with GNOME, log in, and open a terminal inside the GNOME session.
+   The GNOME settings need a running session, so a bare TTY will not work.
 
-```sh
-git clone https://github.com/niyazmalik/dotfiles.git ~/Projects/dotfiles
-cd ~/Projects/dotfiles
-./install.sh
-```
+2. Clone and run the install script:
 
-The script installs the packages from `packages/arch/pacman.txt`, links every config into place, installs oh-my-bash, downloads every GNOME extension listed in `dconf.ini` from extensions.gnome.org, and loads my GNOME settings.
-If a file is already sitting where a link needs to go, it gets moved to `~/.dotfiles-backup/<timestamp>/` first, so running the script again is safe.
+   ```sh
+   git clone https://github.com/niyazmalik/dotfiles.git ~/Projects/dotfiles
+   cd ~/Projects/dotfiles
+   ./install.sh
+   ```
 
-Then I copy two private files over from my old machine by hand, because they never belong in a public repo:
+3. Copy the two private files from the old machine.
+   They are not in this repo on purpose.
 
-- `~/.bash_local` holds my work aliases, tokens and anything else that only makes sense on my machine. `.bashrc` sources it at the end.
-- `~/.gitconfig.local` holds my git name and email. `.gitconfig` includes it.
+   - `~/.bash_local`: machine-specific aliases, tokens and paths. Sourced at the end of `.bashrc`.
+   - `~/.gitconfig.local`: git name and email. Included by `.gitconfig`.
 
-Finally I log out and back in so GNOME picks up the extensions, open Neovim once so lazy.nvim installs the plugins pinned in `lazy-lock.json`, and install the AUR packages from `packages/arch/aur.txt` with my AUR helper.
+4. Log out and back in so GNOME loads the extensions.
 
-## What lives where
+5. Open Neovim once. lazy.nvim installs the plugins pinned in `lazy-lock.json`.
 
-| Path | What it is | Linked to |
+6. Install the AUR packages from `packages/arch/aur.txt` with an AUR helper.
+
+## What install.sh does
+
+- Installs the packages in `packages/arch/pacman.txt`.
+- Symlinks every config into place.
+- Installs oh-my-bash and links the prompt theme.
+- Downloads every GNOME extension listed in `desktop/gnome/dconf.ini` from extensions.gnome.org.
+- Loads the GNOME settings from `desktop/gnome/dconf.ini`.
+
+Any existing file in the way of a symlink is moved to `~/.dotfiles-backup/<timestamp>/`, so the script is safe to run again.
+
+## Layout
+
+| Path | Contents | Linked to |
 | --- | --- | --- |
 | `bin/` | `mm` and `vv` | `~/.local/bin/` |
-| `desktop/gnome/extensions/` | my app-focus-shortcuts extension | `~/.local/share/gnome-shell/extensions/` |
-| `desktop/gnome/dconf.ini` | the GNOME settings this setup depends on | loaded with `dconf load` |
+| `desktop/gnome/extensions/` | app-focus-shortcuts extension | `~/.local/share/gnome-shell/extensions/` |
+| `desktop/gnome/dconf.ini` | GNOME and extension settings | loaded with `dconf load` |
 | `editors/neovim/` | Neovim config | `~/.config/nvim` |
 | `git/.gitconfig` | git config | `~/.gitconfig` |
 | `multiplexers/tmux/.tmux.conf` | tmux config | `~/.tmux.conf` |
-| `packages/arch/` | the packages these configs need | installed with pacman |
-| `prompts/oh-my-bash/` | my prompt theme | `~/.oh-my-bash/custom/themes/` |
+| `packages/arch/` | required packages | installed with pacman |
+| `prompts/oh-my-bash/` | prompt theme | `~/.oh-my-bash/custom/themes/` |
 | `shells/bash/` | `.bashrc`, `.bash_profile`, `.inputrc` | `~/` |
 | `terminals/alacritty/alacritty.toml` | Alacritty config | `~/.config/alacritty/` |
 
-## Things I use daily
+## Shortcuts and scripts
 
-My extension gives me Super+E to focus or open Files, Super+S for Settings, and Super+N to toggle the notification panel even though my top bar is hidden.
-Super+P takes a screenshot with Flameshot.
+| Key | Action |
+| --- | --- |
+| Super+E | Focus or open Files |
+| Super+S | Focus or open Settings |
+| Super+N | Toggle the notification panel |
+| Super+P | Screenshot with Flameshot |
 
-`mm` saves the audio from a YouTube, YouTube Music or any other yt-dlp link into `~/Music`, and `vv` saves the video into `~/Videos`.
-Both take an optional file name and a `-f` format, and `--help` shows the rest.
+- `mm <url> [name]` saves audio to `~/Music`. Works with YouTube, YouTube Music and anything else yt-dlp supports.
+- `vv <url> [name]` saves video to `~/Videos`.
+
+Both accept `-f <format>`. Run either with `--help` for the formats.
 
 ## Adding a GNOME extension
 
-When I install a new extension from extensions.gnome.org, I add its UUID to `enabled-extensions` in `desktop/gnome/dconf.ini`.
-Then I run `dconf dump /org/gnome/shell/extensions/<name>/` and copy the settings I changed into that file under `[org/gnome/shell/extensions/<name>]`.
-That is all `install.sh` needs to download it and set it up on the next machine.
+1. Add its UUID to `enabled-extensions` in `desktop/gnome/dconf.ini`.
+2. Run `dconf dump /org/gnome/shell/extensions/<name>/`.
+3. Copy the changed settings into `dconf.ini` under `[org/gnome/shell/extensions/<name>]`.
 
-## When something breaks
+## Troubleshooting
 
-If my extension stops loading after a GNOME upgrade, it is almost always `shell-version` in its `metadata.json`.
-It only lists the GNOME versions I have actually tested, so a new major version has to be added there by hand.
+If the app-focus-shortcuts extension stops loading after a GNOME upgrade, add the new GNOME version to `shell-version` in its `metadata.json`.
