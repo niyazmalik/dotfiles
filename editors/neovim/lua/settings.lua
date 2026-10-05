@@ -1,116 +1,23 @@
-vim.opt.hidden = true
 vim.opt.termguicolors = true
+vim.opt.fileformats = { "unix", "dos", "mac" }
 
--- Force black background
-vim.api.nvim_set_hl(0, 'Normal', { bg = '#000000' })
-vim.api.nvim_set_hl(0, 'NormalFloat', { bg = '#000000' })
-vim.api.nvim_set_hl(0, 'NormalNC', { bg = '#000000' })
-vim.api.nvim_set_hl(0, 'SignColumn', { bg = '#000000' })
-vim.api.nvim_set_hl(0, 'EndOfBuffer', { bg = '#000000' })
-
--- Fix popup menu colors
-vim.api.nvim_set_hl(0, 'Pmenu', { bg = '#0b1542', fg = '#ffffff' })
-vim.api.nvim_set_hl(0, 'PmenuSel', { bg = '#414157', fg = '#ffffff' })
-vim.api.nvim_set_hl(0, 'PmenuSbar', { bg = '#2a2a2a' })
-vim.api.nvim_set_hl(0, 'PmenuThumb', { bg = '#4a4a4a' })
-
-vim.opt.ruler = false
-
--- UI settings
 vim.opt.number = true
 vim.opt.relativenumber = true
+vim.opt.ruler = false
 vim.opt.laststatus = 0
-vim.opt.signcolumn = "auto"
-vim.opt.scrolloff = 0
+vim.opt.showtabline = 0
 vim.opt.fillchars = { eob = " " }
-
--- Disable bracket matching highlight
-vim.g.loaded_matchparen = 1
-
--- Left margin padding
 vim.opt.foldcolumn = "1"
-vim.cmd([[highlight FoldColumn guibg=NONE ctermbg=NONE]])
-
--- Hide mode text and messages
 vim.opt.showmode = false
 vim.opt.shortmess:append("IWc")
 
--- Indentation
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
-vim.opt.autoindent = true
 
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = "cpp",
-    callback = function()
-        vim.opt_local.tabstop = 6
-        vim.opt_local.shiftwidth = 6
-    end,
-})
-
--- Terminal toggle function (floating centered version)
-local term_buf = nil
-local term_win = nil
-
-function ToggleTerminal()
-    -- If terminal window exists and is valid, close it
-    if term_win and vim.api.nvim_win_is_valid(term_win) then
-        vim.api.nvim_win_close(term_win, true)
-        term_win = nil
-        return
-    end
-
-    -- If terminal buffer doesn't exist or isn't valid, create new one
-    if not term_buf or not vim.api.nvim_buf_is_valid(term_buf) then
-        term_buf = vim.api.nvim_create_buf(false, true)
-    end
-
-    -- Get editor dimensions
-    local width = vim.o.columns
-    local height = vim.o.lines
-
-    -- Calculate floating window size (80% width, 60% height)
-    local win_width = math.floor(width * 0.6)
-    local win_height = math.floor(height * 0.8)
-
-    -- Calculate center position
-    local row = math.floor((height - win_height) / 2)
-    local col = math.floor((width - win_width) / 2)
-
-    -- Floating window options
-    local opts = {
-        relative = 'editor',
-        width = win_width,
-        height = win_height,
-        row = row,
-        col = col,
-        style = 'minimal',
-        border = 'single',
-    }
-
-    -- Open floating window
-    term_win = vim.api.nvim_open_win(term_buf, true, opts)
-
-    -- Set window-local options
-    vim.api.nvim_win_set_option(term_win, 'winblend', 0)
-
-    -- Start terminal if it's a new buffer
-    if vim.api.nvim_buf_line_count(term_buf) == 1 and vim.api.nvim_buf_get_lines(term_buf, 0, -1, false)[1] == '' then
-        vim.fn.termopen(vim.o.shell)
-    end
-
-    -- Enter insert mode
-    vim.cmd('startinsert')
-end
-
--- Set border color to grey
-vim.api.nvim_set_hl(0, 'FloatBorder', { fg = '#808080', bg = 'NONE' })
-
--- Netrw settings
+vim.g.loaded_matchparen = 1
 vim.g.netrw_banner = 0
 
--- No line numbers for txt files
 vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
     pattern = "*.txt",
     callback = function()
@@ -119,11 +26,68 @@ vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
     end,
 })
 
--- Netrw keymaps
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "netrw",
     callback = function()
         vim.keymap.set("n", "l", "<CR>", { buffer = true, remap = true })
         vim.keymap.set("n", "h", "-", { buffer = true, remap = true })
+    end,
+})
+
+--[[ The cityhotel repos have files with mixed line endings, which Neovim reads as unix
+     and paints a ^M on every CRLF line. I hide those on screen only, so the bytes on
+     disk stay untouched and git never shows a diff I did not make. ]]
+local stray_cr_ns = vim.api.nvim_create_namespace("stray_carriage_returns")
+
+local function has_stray_cr(buf)
+    if vim.b[buf].stray_cr == nil then
+        local found = false
+        if vim.bo[buf].buftype == "" then
+            for _, line in ipairs(vim.api.nvim_buf_get_lines(buf, 0, -1, false)) do
+                if line:sub(-1) == "\r" then
+                    found = true
+                    break
+                end
+            end
+        end
+        vim.b[buf].stray_cr = found
+    end
+    return vim.b[buf].stray_cr
+end
+
+vim.api.nvim_set_decoration_provider(stray_cr_ns, {
+    on_win = function(_, _, buf)
+        return vim.b[buf].stray_cr == true
+    end,
+    on_line = function(_, _, buf, row)
+        local line = vim.api.nvim_buf_get_lines(buf, row, row + 1, false)[1]
+        if line and line:sub(-1) == "\r" then
+            vim.api.nvim_buf_set_extmark(buf, stray_cr_ns, row, #line - 1, {
+                end_col = #line,
+                conceal = "",
+                ephemeral = true,
+            })
+        end
+    end,
+})
+
+vim.api.nvim_create_autocmd({ "BufReadPost", "BufWinEnter" }, {
+    group = vim.api.nvim_create_augroup("StrayCarriageReturns", { clear = true }),
+    callback = function(args)
+        if args.event == "BufReadPost" then
+            vim.b[args.buf].stray_cr = nil
+        end
+
+        local win = vim.api.nvim_get_current_win()
+        if vim.api.nvim_win_get_buf(win) ~= args.buf then
+            return
+        end
+
+        if has_stray_cr(args.buf) then
+            vim.wo[win].conceallevel = 3
+            vim.wo[win].concealcursor = "nvic"
+        else
+            vim.wo[win].conceallevel = 0
+        end
     end,
 })
