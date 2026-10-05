@@ -17,7 +17,7 @@ cd ~/Projects/dotfiles
 ./install.sh
 ```
 
-The script installs the packages from `packages/arch/pacman.txt`, links every config into place, installs oh-my-bash and the Just Perfection extension, and loads my GNOME settings.
+The script installs the packages from `packages/arch/pacman.txt`, links every config into place, installs oh-my-bash, downloads every GNOME extension listed in `dconf.ini` from extensions.gnome.org, and loads my GNOME settings.
 If a file is already sitting where a link needs to go, it gets moved to `~/.dotfiles-backup/<timestamp>/` first, so running the script again is safe.
 
 Then I copy two private files over from my old machine by hand, because they never belong in a public repo:
@@ -49,6 +49,12 @@ Super+P takes a screenshot with Flameshot.
 
 `mm` saves the audio from a YouTube, YouTube Music or any other yt-dlp link into `~/Music`, and `vv` saves the video into `~/Videos`.
 Both take an optional file name and a `-f` format, and `--help` shows the rest.
+
+## Adding a GNOME extension
+
+When I install a new extension from extensions.gnome.org, I add its UUID to `enabled-extensions` in `desktop/gnome/dconf.ini`.
+Then I run `dconf dump /org/gnome/shell/extensions/<name>/` and copy the settings I changed into that file under `[org/gnome/shell/extensions/<name>]`.
+That is all `install.sh` needs to download it and set it up on the next machine.
 
 ## When something breaks
 

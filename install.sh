@@ -24,21 +24,22 @@ install_packages() {
 install_gnome() {
     local extensions="$HOME/.local/share/gnome-shell/extensions"
     local own=app-focus-shortcuts@niyaz.local
-    local just_perfection=just-perfection-desktop@just-perfection
+    local dconf_ini="$dotfiles/desktop/gnome/dconf.ini"
+    local shell_version uuid zip
 
     link "desktop/gnome/extensions/$own" "$extensions/$own"
     glib-compile-schemas "$dotfiles/desktop/gnome/extensions/$own/schemas"
 
-    if [[ ! -d "$extensions/$just_perfection" ]]; then
-        local shell_version zip
-        shell_version="$(gnome-shell --version | grep -oE '[0-9]+' | head -1)"
+    shell_version="$(gnome-shell --version | grep -oE '[0-9]+' | head -1)"
+    for uuid in $(sed -n 's/^enabled-extensions=//p' "$dconf_ini" | grep -oE "[^' ,\[]+@[^' ,]+"); do
+        [[ -d "$extensions/$uuid" ]] && continue
         zip="$(mktemp --suffix=.zip)"
-        curl -fsSL -o "$zip" "https://extensions.gnome.org/download-extension/$just_perfection.shell-extension.zip?shell_version=$shell_version"
+        curl -fsSL -o "$zip" "https://extensions.gnome.org/download-extension/$uuid.shell-extension.zip?shell_version=$shell_version"
         gnome-extensions install --force "$zip"
         rm "$zip"
-    fi
+    done
 
-    dconf load / < "$dotfiles/desktop/gnome/dconf.ini"
+    dconf load / < "$dconf_ini"
 }
 
 install_neovim() {
