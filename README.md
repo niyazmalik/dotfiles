@@ -60,7 +60,7 @@ Any existing file in the way of a symlink is moved to `~/.dotfiles-backup/<times
 | --- | --- |
 | Super+E | Focus or open Files |
 | Super+S | Focus or open Settings |
-| Super+N | Toggle the notification panel |
+| Super+N | Show or hide the top bar |
 | Super+P | Screenshot with Flameshot |
 
 - `mm <url> [name]` saves audio to `~/Music`. Works with YouTube, YouTube Music and anything else yt-dlp supports.

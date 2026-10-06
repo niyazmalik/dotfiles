@@ -26,8 +26,6 @@ const SHORTCUTS = [
 export default class AppFocusShortcuts extends Extension {
     enable() {
         this._settings = this.getSettings();
-        this._dateMenu = Main.panel.statusArea.dateMenu.menu;
-        this._revealedPanel = false;
 
         for (const shortcut of SHORTCUTS) {
             Main.wm.addKeybinding(
@@ -40,37 +38,20 @@ export default class AppFocusShortcuts extends Extension {
         }
 
         Main.wm.addKeybinding(
-            'notification-shortcut',
+            'panel-shortcut',
             this._settings,
             Meta.KeyBindingFlags.NONE,
             Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW | Shell.ActionMode.POPUP,
-            () => this._toggleNotificationPanel()
+            () => this._togglePanel()
         );
-
-        this._menuStateId = this._dateMenu.connect('open-state-changed', (_menu, isOpen) => {
-            if (!isOpen && this._revealedPanel) {
-                this._revealedPanel = false;
-                this._justPerfectionSettings()?.set_boolean('panel', false);
-            }
-        });
     }
 
     disable() {
         for (const shortcut of SHORTCUTS)
             Main.wm.removeKeybinding(shortcut.key);
 
-        Main.wm.removeKeybinding('notification-shortcut');
+        Main.wm.removeKeybinding('panel-shortcut');
 
-        if (this._openIdleId) {
-            GLib.source_remove(this._openIdleId);
-            this._openIdleId = null;
-        }
-
-        this._dateMenu.disconnect(this._menuStateId);
-        if (this._revealedPanel)
-            this._justPerfectionSettings()?.set_boolean('panel', false);
-
-        this._dateMenu = null;
         this._settings = null;
         this._jpSettings = null;
     }
@@ -86,26 +67,9 @@ export default class AppFocusShortcuts extends Extension {
             Util.spawn(shortcut.launchArgv);
     }
 
-    _toggleNotificationPanel() {
-        if (this._openIdleId)
-            return;
-
-        if (this._dateMenu.isOpen) {
-            this._dateMenu.close();
-            return;
-        }
-
+    _togglePanel() {
         const jpSettings = this._justPerfectionSettings();
-        if (jpSettings && !jpSettings.get_boolean('panel')) {
-            this._revealedPanel = true;
-            jpSettings.set_boolean('panel', true);
-        }
-
-        this._openIdleId = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-            this._openIdleId = null;
-            this._dateMenu.open();
-            return GLib.SOURCE_REMOVE;
-        });
+        jpSettings?.set_boolean('panel', !jpSettings.get_boolean('panel'));
     }
 
     _justPerfectionSettings() {

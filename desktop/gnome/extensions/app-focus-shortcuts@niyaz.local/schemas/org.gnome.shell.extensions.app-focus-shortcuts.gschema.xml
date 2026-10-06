@@ -11,10 +11,10 @@
       <summary>Settings shortcut</summary>
       <description>Shortcut used to focus or launch GNOME Settings.</description>
     </key>
-    <key name="notification-shortcut" type="as">
+    <key name="panel-shortcut" type="as">
       <default>["&lt;Super&gt;n"]</default>
-      <summary>Notification panel shortcut</summary>
-      <description>Shortcut used to reveal the top bar and toggle the GNOME notification panel.</description>
+      <summary>Top bar shortcut</summary>
+      <description>Shortcut used to show or hide the top bar.</description>
     </key>
   </schema>
 </schemalist>
